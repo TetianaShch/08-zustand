@@ -1,4 +1,15 @@
 import css from './page.module.css';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'NoteHub | Home',
+  description: 'Manage notes...',
+  openGraph: {
+    title: 'NoteHub',
+    description: 'Manage notes...',
+    type: 'website',
+  },
+};
 
 export default function HomePage() {
   return (
