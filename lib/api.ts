@@ -21,7 +21,7 @@ export interface FetchNotesParams {
   tag?: string;
 }
 
- export interface CreateNotePayload {
+export interface CreateNotePayload {
   title: string;
   content: string;
   tag: string;
@@ -70,4 +70,10 @@ export const fetchNoteById = async (id: string): Promise<Note> => {
   const { data } = await api.get<Note>(`/notes/${id}`);
   return data;
 };
+
+
+
+
+
+
 
