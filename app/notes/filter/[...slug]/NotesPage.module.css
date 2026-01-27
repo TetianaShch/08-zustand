@@ -17,6 +17,7 @@
 }
 
 .button {
+  flex-shrink: 0;
   padding: 6px 12px;
   font-size: 16px;
   color: #fff;

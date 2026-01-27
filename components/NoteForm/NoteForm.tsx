@@ -2,46 +2,64 @@
 
 import { useRouter } from 'next/navigation';
 import { createNoteAction } from '@/app/notes/action/create/actions';
+import { useNoteStore } from '@/lib/store/noteStore';
 import type { NoteTag } from '@/types/note';
 import css from './NoteForm.module.css';
 
-const TAGS: NoteTag[] = ['Todo', 'Work', 'Personal', 'Meeting', 'Shopping'];
-
-export default function NoteForm() {
+const NoteForm = () => {
   const router = useRouter();
+  const { draft, setDraft, clearDraft } = useNoteStore();
+
+  const handleChange: React.ChangeEventHandler<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  > = e => {
+    const { name, value } = e.target;
+
+    if (name === 'title') setDraft({ title: value });
+    if (name === 'content') setDraft({ content: value });
+    if (name === 'tag') setDraft({ tag: value as NoteTag });
+  };
+
+  const handleSubmit = async (formData: FormData) => {
+    const res = await createNoteAction(formData);
+
+    if (res.ok) {
+      clearDraft();
+      router.back();
+    }
+  };
 
   return (
-    <form className={css.form}>
+    <form className={css.form} action={handleSubmit}>
       <div className={css.formGroup}>
-        <label htmlFor="title">Title</label>
-        <input id="title" type="text" name="title" className={css.input} />
+        <label>Title</label>
+        <input name="title" defaultValue={draft.title} onChange={handleChange} />
       </div>
 
       <div className={css.formGroup}>
-        <label htmlFor="content">Content</label>
-        <textarea id="content" name="content" rows={8} className={css.textarea} />
+        <label>Content</label>
+        <textarea name="content" defaultValue={draft.content} onChange={handleChange} />
       </div>
 
       <div className={css.formGroup}>
-        <label htmlFor="tag">Tag</label>
-        <select id="tag" name="tag" className={css.select} defaultValue="Todo">
-          {TAGS.map(tag => (
-            <option key={tag} value={tag}>
-              {tag}
-            </option>
-          ))}
+        <label>Tag</label>
+        <select name="tag" defaultValue={draft.tag} onChange={handleChange}>
+          <option value="Todo">Todo</option>
+          <option value="Work">Work</option>
+          <option value="Personal">Personal</option>
+          <option value="Meeting">Meeting</option>
+          <option value="Shopping">Shopping</option>
         </select>
       </div>
 
       <div className={css.actions}>
-        <button type="submit" className={css.submitButton} formAction={createNoteAction}>
-          Create note
-        </button>
-
-        <button type="button" className={css.cancelButton} onClick={() => router.back()}>
+        <button type="submit">Create</button>
+        <button type="button" onClick={() => router.back()}>
           Cancel
         </button>
       </div>
     </form>
   );
-}
+};
+
+export default NoteForm;
